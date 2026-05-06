@@ -8,13 +8,8 @@
     :root { --bg: #1a252f; --surface: #2c3e50; --accent: #3498db; --correct: #27ae60; --wrong: #c0392b; --text: #ecf0f1; }
     body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
     
-    /* Cabeçalho com alinhamento correto */
     header { background: var(--surface); height: 10vh; padding: 0 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); }
-    h1 { font-size: 0.9rem; margin: 0; text-transform: uppercase; }
-    
-    /* Container para ficar fixo na direita */
     .header-actions { display: flex; align-items: center; gap: 10px; }
-    .voice-toggle { background: none; border: none; cursor: pointer; color: white; font-size: 24px; }
     
     .stats { height: 7vh; display: flex; justify-content: center; align-items: center; gap: 20px; font-weight: bold; background: rgba(0,0,0,0.1); }
     .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; width: 100%; max-width: 450px; margin: auto; }
@@ -27,16 +22,15 @@
 <body>
 
 <header>
-  <h1>VERBOS AUXILIARES</h1>
+  <h1>VERBOS</h1>
   <div class="header-actions">
-    <a href="index.html" style="text-decoration:none; color:white; font-size: 24px;">⬅️</a>
-    <button id="voiceBtn" class="voice-toggle" onclick="toggleAudio()">🎧</button>
+    <a href="index.html" style="text-decoration:none; color:white; font-size:24px;">⬅️</a>
+    <button onclick="alert('Áudio')" style="background:none; border:none; color:white; font-size:24px;">🎧</button>
   </div>
 </header>
 
 <div class="stats">
-  <span style="color:var(--correct)">✓ <span id="ok">0</span></span>
-  <span style="color:var(--wrong)">✗ <span id="err">0</span></span>
+  <span>✓ <span id="ok">0</span></span>
   <span id="prog">0/18</span>
 </div>
 
@@ -51,9 +45,7 @@ const ALL_DATA = [
   {nl:"WORDEN", pt:"se tornar", art:"➡️"}
 ];
 
-let currentIdx = 0, batchSize = 5, selected = [], ok = 0, err = 0, audio = true;
-
-function toggleAudio() { audio = !audio; document.getElementById('voiceBtn').style.opacity = audio ? "1" : "0.3"; }
+let currentIdx = 0, batchSize = 5, selected = [];
 
 function loadBatch() {
   const grid = document.getElementById('grid'); grid.innerHTML = ''; selected = [];
@@ -71,13 +63,12 @@ function loadBatch() {
         div.classList.add('selected'); selected.push({el: div, id: c.id});
         if (selected.length === 2) {
           if (selected[0].id === selected[1].id) {
-            ok++; selected.forEach(s => s.el.classList.add('matched'));
-            document.getElementById('ok').innerText = ok;
+            selected.forEach(s => s.el.classList.add('matched'));
             if (document.querySelectorAll('.matched').length === batch.length * 2) {
-              currentIdx += batchSize; 
+              currentIdx += batchSize;
               if (currentIdx < ALL_DATA.length) setTimeout(loadBatch, 500);
             }
-          } else { err++; setTimeout(() => selected.forEach(s => s.el.classList.remove('selected')), 500); }
+          } else { setTimeout(() => selected.forEach(s => s.el.classList.remove('selected')), 500); }
           selected = [];
         }
       }
