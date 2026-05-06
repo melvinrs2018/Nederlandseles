@@ -1,4 +1,19 @@
-// Estrutura corrigida para os Verbos Auxiliares
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbos Auxiliares</title>
+    <style>
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .card { padding: 20px; background: #2c3e50; color: white; cursor: pointer; text-align: center; border-radius: 8px; }
+        .icon { display: block; font-size: 24px; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="grid" id="game-grid"></div>
+
+<script>
 const ALL_DATA = [
   { nl: "zijn", pt: "ser / estar", icon: "👤" },
   { nl: "hebben", pt: "ter", icon: "📦" },
@@ -11,13 +26,30 @@ const ALL_DATA = [
   { nl: "worden", pt: "se tornar", icon: "➡️" }
 ];
 
-// Função corrigida para carregar no máximo 10 palavras (5 pares)
 function loadBatch() {
-  const batch = ALL_DATA.slice(0, 5); // Exemplo de limite de 5 pares
-  let cards = [];
-  batch.forEach(item => {
-    cards.push({ text: item.nl, id: item.nl, type: 'nl' });
-    cards.push({ text: item.pt, id: item.nl, icon: item.icon, type: 'pt' });
-  });
-  // ... lógica de renderização no grid ...
+    const grid = document.getElementById('game-grid');
+    grid.innerHTML = '';
+    // Seleciona os primeiros 5 pares (10 palavras)
+    const batch = ALL_DATA.slice(0, 5);
+    let cards = [];
+    
+    batch.forEach(item => {
+        cards.push({ text: item.nl, id: item.nl, type: 'nl' });
+        cards.push({ text: item.pt, id: item.nl, icon: item.icon, type: 'pt' });
+    });
+
+    cards.sort(() => Math.random() - 0.5);
+
+    cards.forEach(card => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        // Adiciona o ícone apenas se existir (no caso de ser o cartão PT)
+        div.innerHTML = (card.icon ? `<span class="icon">${card.icon}</span>` : '') + card.text;
+        grid.appendChild(div);
+    });
 }
+
+loadBatch();
+</script>
+</body>
+</html>
