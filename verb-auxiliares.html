@@ -91,7 +91,6 @@ html_code = '''<!DOCTYPE html>
 
 <script>
 const ALL_DATA = [
-  // Verbos da imagem original
   {nl:"zijn", pt:"ser / estar", art:"🧘"},
   {nl:"hebben", pt:"ter", art:"✋"},
   {nl:"gaan", pt:"ir", art:"🚶"},
@@ -101,7 +100,6 @@ const ALL_DATA = [
   {nl:"moeten", pt:"dever / precisar", art:"📌"},
   {nl:"zullen", pt:"futuro / sugestão", art:"🔮"},
   {nl:"worden", pt:"se tornar", art:"🔄"},
-  // Verbos auxiliares adicionais para completar 34
   {nl:"laten", pt:"deixar", art:"🙌"},
   {nl:"blijven", pt:"permanecer", art:"🏠"},
   {nl:"komen", pt:"vir", art:"➡️"},
@@ -110,7 +108,6 @@ const ALL_DATA = [
   {nl:"liggen", pt:"deitar", art:"🛌"},
   {nl:"zitten", pt:"sentar", art:"🪑"},
   {nl:"hangen", pt:"pendurar", art:"🪝"},
-  // Mais verbos para completar
   {nl:"brengen", pt:"trazer", art:"🎁"},
   {nl:"doen", pt:"fazer", art:"⚡"},
   {nl:"geven", pt:"dar", art:"🎀"},
@@ -198,11 +195,10 @@ loadBatch();
 </body>
 </html>'''
 
-# Salvar o arquivo
+# Salvar arquivo limpo
 output_path = '/mnt/agents/output/verbos_auxiliares.html'
 with open(output_path, 'w', encoding='utf-8') as f:
     f.write(html_code)
 
-print(f"✅ Arquivo salvo em: {output_path}")
-print(f"📊 Total de palavras: {34} (17 pares)")
-print(f"🎯 Primeiros 9 verbos são os da sua imagem!")
+print("✅ Arquivo corrigido e salvo!")
+print(f"📁 Local: {output_path}")
