@@ -5,75 +5,175 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Verbos Auxiliares</title>
   <style>
-    :root { --bg: #1a252f; --surface: #2c3e50; --accent: #3498db; --correct: #27ae60; --wrong: #c0392b; --text: #ecf0f1; }
-    * { box-sizing: border-box; touch-action: manipulation; }
-    body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-    header { background: var(--surface); height: 10vh; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); }
-    header h1 { font-size: 1rem; text-transform: uppercase; margin: 0; }
-    .stats { height: 7vh; display: flex; gap: 20px; justify-content: center; align-items: center; font-weight: bold; background: rgba(0,0,0,0.1); }
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; max-width: 450px; margin: auto; height: 80vh; }
-    .card { background: var(--surface); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-align: center; border: 1px solid #444; }
-    .card.selected { border: 3px solid var(--accent); background: #34495e; }
-    .card.matched { visibility: hidden; }
+    :root {
+      --bg: #1a252f; --surface: #2c3e50; --accent: #3498db;
+      --correct: #27ae60; --wrong: #c0392b; --text: #ecf0f1;
+    }
+    * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      font-family: sans-serif; background: var(--bg); color: var(--text);
+      margin: 0; padding: 0; display: flex; flex-direction: column; 
+      height: 100vh; width: 100vw; overflow: hidden;
+    }
+
+    /* Topo com altura fixa conforme modelo */
+    header {
+      background: var(--surface); height: 10vh; min-height: 50px; padding: 0 20px; 
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px solid var(--accent); flex-shrink: 0;
+    }
+    header h1 { font-size: clamp(0.7rem, 3.5vw, 1rem); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+    
+    /* Ações do cabeçalho */
+    .header-actions { display: flex; align-items: center; gap: 15px; }
+
+    /* Fone Branco no Canto */
+    .voice-toggle {
+      background: none; border: none; cursor: pointer; color: white;
+      font-size: clamp(20px, 6vw, 28px); padding: 5px; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Estatísticas com altura fixa */
+    .stats { height: 7vh; display: flex; gap: 20px; justify-content: center; align-items: center; font-weight: bold; flex-shrink: 0; background: rgba(0,0,0,0.1); }
+    
+    /* Área de jogo ajustada para preencher o resto da tela */
+    .grid-container { 
+      flex: 1; 
+      display: flex; align-items: center; justify-content: center; 
+      padding: 10px; width: 100%; overflow: hidden;
+    }
+    
+    /* Grid 2x5 conforme modelo */
+    .grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(5, 1fr); 
+      gap: 10px; width: 100%; max-width: 450px; height: 100%;
+    }
+
+    /* Caixas maiores e adaptáveis */
+    .card {
+      background: var(--surface); border-radius: 10px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.05);
+      text-align: center; transition: 0.1s; padding: 4px;
+    }
+    .card:active { transform: scale(0.96); }
+    .card.selected { border: 3px solid var(--accent); background: #34495e; box-shadow: 0 0 10px rgba(52, 152, 219, 0.3); }
+    .card.matched { visibility: hidden; pointer-events: none; }
+    
+    /* Tamanho de fonte responsivo para texto */
+    .nl-text { font-weight: bold; font-size: clamp(0.7rem, 3.5vw, 1rem); text-transform: uppercase; color: #fff; }
+    .pt-sub { font-size: clamp(0.6rem, 3vw, 0.8rem); color: #bdc3c7; font-weight: bold; }
+
+    /* Barra de Sucesso Final */
+    #celebration {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg); z-index: 100; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+    }
   </style>
 </head>
 <body>
 
 <header>
   <h1>VERBOS AUXILIARES</h1>
-  <a href="index.html" style="color:white; text-decoration:none;">⬅️</a>
+  <div class="header-actions">
+    <a href="index.html" style="text-decoration: none; color: white; font-size: 24px;">⬅️</a>
+    <button id="voiceBtn" class="voice-toggle" onclick="toggleAudio()">🎧</button>
+  </div>
 </header>
 
 <div class="stats">
   <span style="color:var(--correct)">✓ <span id="ok">0</span></span>
   <span style="color:var(--wrong)">✗ <span id="err">0</span></span>
-  <span>TOTAL: 0/18</span>
+  <span style="font-size: 0.8rem; color: #7f8c8d;">TOTAL: <span id="prog">0</span>/18</span>
 </div>
 
-<div class="grid" id="grid"></div>
+<div class="grid-container">
+  <div class="grid" id="grid"></div>
+</div>
+
+<div id="celebration">
+  <h2>Concluído com Sucesso!</h2>
+  <p>Você revisou todos os 9 verbos auxiliares.</p>
+  <button style="margin-top:20px; padding:15px 30px; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="location.reload()">RECOMEÇAR</button>
+</div>
 
 <script>
-// Apenas os 9 verbos da sua lista de auxiliares
+// Apenas os 9 verbos auxiliares da sua imagem
 const ALL_DATA = [
   {nl:"zijn", pt:"ser / estar"}, {nl:"hebben", pt:"ter"}, {nl:"gaan", pt:"ir"},
   {nl:"willen", pt:"querer"}, {nl:"kunnen", pt:"poder"}, {nl:"mogen", pt:"poder"},
   {nl:"moeten", pt:"dever / precisar"}, {nl:"zullen", pt:"futuro/sugestão"}, {nl:"worden", pt:"se tornar"}
 ];
 
-const grid = document.getElementById('grid');
-let selected = [];
-let ok = 0, err = 0;
+let audioEnabled = true, ok = 0, err = 0, selected = [];
 
-let cards = [];
-ALL_DATA.forEach(item => {
-  cards.push({text: item.nl, id: item.nl}, {text: item.pt, id: item.nl});
-});
-cards.sort(() => Math.random() - 0.5);
+function toggleAudio() { 
+  audioEnabled = !audioEnabled; 
+  document.getElementById('voiceBtn').style.opacity = audioEnabled ? "1" : "0.3";
+}
 
-cards.forEach(card => {
-  const div = document.createElement('div');
-  div.className = 'card';
-  div.innerText = card.text;
-  div.onclick = () => {
-    if(selected.length < 2) {
-      div.classList.add('selected');
-      selected.push({el: div, id: card.id});
-      if(selected.length === 2) {
-        if(selected[0].id === selected[1].id) {
-          ok++; document.getElementById('ok').innerText = ok;
-          selected.forEach(s => s.el.classList.add('matched'));
-        } else {
-          err++; document.getElementById('err').innerText = err;
+function speakNL(text) {
+  if (!audioEnabled) return;
+  window.speechSynthesis.cancel();
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = 'nl-NL';
+  window.speechSynthesis.speak(msg);
+}
+
+function loadBatch() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  selected = [];
+  
+  // Como são apenas 9 verbos, carregamos todos de uma vez (18 cartas)
+  let cards = [];
+  ALL_DATA.forEach(w => {
+    cards.push({ text: w.pt, id: w.nl, type: 'pt' });
+    cards.push({ text: w.nl, id: w.nl, type: 'nl' });
+  });
+  
+  // Embaralhar
+  cards.sort(() => Math.random() - 0.5).forEach(card => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = card.type === 'pt' 
+      ? `<span class="pt-sub">${card.text}</span>`
+      : `<span class="nl-text">${card.nl}</span>`;
+    
+    div.onclick = () => {
+      // Regra de som: Somente se for texto Holandês (nl)
+      if (card.type === 'nl') speakNL(card.text);
+      handleSelect(card, div, ALL_DATA.length);
+    };
+    grid.appendChild(div);
+  });
+}
+
+function handleSelect(card, el, totalBatch) {
+  if (selected.length === 2 || el.classList.contains('selected')) return;
+  el.classList.add('selected');
+  selected.push({ card, el });
+  if (selected.length === 2) {
+    const [a, b] = selected;
+    if (a.card.id === b.card.id && a.card.type !== b.card.type) {
+      ok++; document.getElementById('ok').innerText = ok;
+      document.getElementById('prog').innerText = ok * 2;
+      setTimeout(() => {
+        a.el.classList.add('matched'); b.el.classList.add('matched');
+        if (document.querySelectorAll('.matched').length === totalBatch * 2) {
+          document.getElementById('celebration').style.display = 'flex';
         }
-        setTimeout(() => {
-          document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-          selected = [];
-        }, 500);
-      }
+      }, 400);
+      selected = [];
+    } else {
+      err++; document.getElementById('err').innerText = err;
+      setTimeout(() => { a.el.classList.remove('selected'); b.el.classList.remove('selected'); selected = []; }, 500);
     }
-  };
-  grid.appendChild(div);
-});
+  }
+}
+
+// Iniciar o jogo
+loadBatch();
 </script>
 </body>
 </html>
