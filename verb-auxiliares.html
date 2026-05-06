@@ -4,52 +4,56 @@
     <meta charset="UTF-8">
     <title>Verbos Auxiliares</title>
     <style>
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .card { padding: 20px; background: #2c3e50; color: white; cursor: pointer; text-align: center; border-radius: 8px; }
-        .icon { display: block; font-size: 24px; margin-bottom: 5px; }
+        body { background: #1a252f; color: white; font-family: sans-serif; margin: 0; }
+        header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #34495e; }
+        .stats { text-align: center; margin: 10px 0; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; max-width: 600px; margin: auto; }
+        .card { background: #2c3e50; padding: 20px; border-radius: 8px; text-align: center; cursor: pointer; }
+        .icon { display: block; font-size: 30px; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
-<div class="grid" id="game-grid"></div>
+<header>
+    <span>VERBOS AUXILIARES</span>
+    <span>🎧</span>
+</header>
+
+<div class="stats">✓ 0 ✗ 0 TOTAL: 0/18</div>
+
+<div class="grid" id="grid"></div>
 
 <script>
-const ALL_DATA = [
-  { nl: "zijn", pt: "ser / estar", icon: "👤" },
-  { nl: "hebben", pt: "ter", icon: "📦" },
-  { nl: "gaan", pt: "ir", icon: "🚶" },
-  { nl: "willen", pt: "querer", icon: "💭" },
-  { nl: "kunnen", pt: "poder", icon: "🧠" },
-  { nl: "mogen", pt: "poder", icon: "✅" },
-  { nl: "moeten", pt: "dever / precisar", icon: "⚠️" },
-  { nl: "zullen", pt: "futuro", icon: "📅" },
-  { nl: "worden", pt: "se tornar", icon: "➡️" }
+const data = [
+    { nl: "ZIJN", pt: "ser / estar", icon: "👤" },
+    { nl: "HEBBEN", pt: "ter", icon: "📦" },
+    { nl: "GAAN", pt: "ir", icon: "🚶" },
+    { nl: "WILLEN", pt: "querer", icon: "💭" },
+    { nl: "KUNNEN", pt: "poder", icon: "🧠" },
+    { nl: "MOGEN", pt: "poder", icon: "✅" },
+    { nl: "MOETEN", pt: "dever / precisar", icon: "⚠️" },
+    { nl: "ZULLEN", pt: "futuro", icon: "📅" },
+    { nl: "WORDEN", pt: "se tornar", icon: "➡️" }
 ];
 
-function loadBatch() {
-    const grid = document.getElementById('game-grid');
-    grid.innerHTML = '';
-    // Seleciona os primeiros 5 pares (10 palavras)
-    const batch = ALL_DATA.slice(0, 5);
-    let cards = [];
-    
-    batch.forEach(item => {
-        cards.push({ text: item.nl, id: item.nl, type: 'nl' });
-        cards.push({ text: item.pt, id: item.nl, icon: item.icon, type: 'pt' });
-    });
+const grid = document.getElementById('grid');
+let cards = [];
 
-    cards.sort(() => Math.random() - 0.5);
+data.forEach(item => {
+    // Card NL
+    cards.push({ html: item.nl, id: item.nl });
+    // Card PT
+    cards.push({ html: `<span class="icon">${item.icon}</span>${item.pt}`, id: item.nl });
+});
 
-    cards.forEach(card => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        // Adiciona o ícone apenas se existir (no caso de ser o cartão PT)
-        div.innerHTML = (card.icon ? `<span class="icon">${card.icon}</span>` : '') + card.text;
-        grid.appendChild(div);
-    });
-}
+cards.sort(() => Math.random() - 0.5);
 
-loadBatch();
+cards.forEach(card => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = card.html;
+    grid.appendChild(div);
+});
 </script>
 </body>
 </html>
