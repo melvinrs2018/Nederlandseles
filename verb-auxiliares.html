@@ -7,10 +7,8 @@
   <style>
     :root { --bg: #1a252f; --surface: #2c3e50; --accent: #3498db; --correct: #27ae60; --wrong: #c0392b; --text: #ecf0f1; }
     body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-    
     header { background: var(--surface); height: 10vh; padding: 0 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); }
     .header-actions { display: flex; align-items: center; gap: 10px; }
-    
     .stats { height: 7vh; display: flex; justify-content: center; align-items: center; gap: 20px; font-weight: bold; background: rgba(0,0,0,0.1); }
     .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; width: 100%; max-width: 450px; margin: auto; }
     .card { background: var(--surface); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; padding: 15px; border: 1px solid #444; }
@@ -25,7 +23,7 @@
   <h1>VERBOS</h1>
   <div class="header-actions">
     <a href="index.html" style="text-decoration:none; color:white; font-size:24px;">⬅️</a>
-    <button onclick="alert('Áudio')" style="background:none; border:none; color:white; font-size:24px;">🎧</button>
+    <button onclick="toggleAudio()" id="voiceBtn" style="background:none; border:none; color:white; font-size:24px;">🎧</button>
   </div>
 </header>
 
@@ -45,7 +43,17 @@ const ALL_DATA = [
   {nl:"WORDEN", pt:"se tornar", art:"➡️"}
 ];
 
-let currentIdx = 0, batchSize = 5, selected = [];
+let currentIdx = 0, batchSize = 5, selected = [], audio = true;
+
+function toggleAudio() { audio = !audio; document.getElementById('voiceBtn').style.opacity = audio ? "1" : "0.3"; }
+
+function speak(text) {
+  if (!audio) return;
+  window.speechSynthesis.cancel();
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = 'nl-NL';
+  window.speechSynthesis.speak(msg);
+}
 
 function loadBatch() {
   const grid = document.getElementById('grid'); grid.innerHTML = ''; selected = [];
@@ -54,11 +62,13 @@ function loadBatch() {
   batch.forEach(w => {
     cards.push({text: w.nl, id: w.nl, type: 'txt'}, {text: w.pt, id: w.nl, type: 'art', art: w.art});
   });
+  
   cards.sort(() => Math.random() - 0.5).forEach(c => {
     const div = document.createElement('div');
     div.className = 'card';
     div.innerHTML = c.type === 'art' ? `<span class="visual">${c.art}</span>${c.text}` : `<strong>${c.text}</strong>`;
     div.onclick = () => {
+      if (c.type === 'txt') speak(c.text); // Som ativado aqui
       if (selected.length < 2 && !div.classList.contains('selected')) {
         div.classList.add('selected'); selected.push({el: div, id: c.id});
         if (selected.length === 2) {
@@ -66,7 +76,7 @@ function loadBatch() {
             selected.forEach(s => s.el.classList.add('matched'));
             if (document.querySelectorAll('.matched').length === batch.length * 2) {
               currentIdx += batchSize;
-              if (currentIdx < ALL_DATA.length) setTimeout(loadBatch, 500);
+              if (currentIdx < ALL_DATA.length) setTimeout(loadBatch, 800);
             }
           } else { setTimeout(() => selected.forEach(s => s.el.classList.remove('selected')), 500); }
           selected = [];
